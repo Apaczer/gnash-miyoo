@@ -1,4 +1,4 @@
-PRGNAME     = gnash.elf
+PRGNAME     = gnash
 
 TOOLCHAINDIR	?= /opt/miyoo
 SYSROOT			= $(TOOLCHAINDIR)/usr/arm-buildroot-linux-musleabi/sysroot
