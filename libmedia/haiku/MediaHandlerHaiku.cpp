@@ -145,7 +145,7 @@ MediaHandlerHaiku::cameraNames(std::vector<std::string>& /*names*/) const
 //MediaHandlerHaiku::getInputPaddingSize() const
 //{
 //    QQ(2);
-////    return FF_INPUT_BUFFER_PADDING_SIZE;
+////    return AV_INPUT_BUFFER_PADDING_SIZE;
 //}
 
 } // gnash.media.haiku namespace 

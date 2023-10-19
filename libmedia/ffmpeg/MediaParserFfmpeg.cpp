@@ -24,9 +24,9 @@
 #include "log.h"
 #include "IOChannel.h"
 
-#if AV_VERSION_MAJOR < 3
-#define AV_INPUT_BUFFER_PADDING_SIZE FF_INPUT_BUFFER_PADDING_SIZE
-#endif
+//#if AV_VERSION_MAJOR < 3
+//#define AV_INPUT_BUFFER_PADDING_SIZE FF_INPUT_BUFFER_PADDING_SIZE
+//#endif
 
 //#define GNASH_ALLOW_VCODEC_ENV 1
 // Set this to enable a special GNASH_DEFAULT_VCODEC environment variable, which

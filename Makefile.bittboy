@@ -1,6 +1,6 @@
 PRGNAME     = gnash.elf
 
-TOOLCHAINDIR	?= /opt/bittboy-toolchain
+TOOLCHAINDIR	?= /opt/miyoo
 SYSROOT			= $(TOOLCHAINDIR)/usr/arm-buildroot-linux-musleabi/sysroot
 BINDIR			= $(TOOLCHAINDIR)/usr/bin
 PKG_CONFIG		:= $(BINDIR)/pkg-config
@@ -70,7 +70,7 @@ endif
 
 CXXFLAGS 	= $(CFLAGS) -ftree-vectorize
 
-LDFLAGS     = -lc -lgcc -lm -lstdc++ -latomic -lSDL -lasound -lfreetype -lavcodec -lavformat -lavutil -lswresample -lswscale -lopus -ljpeg -lpng -lz -pthread -Wl,-z,norelro -Wl,--hash-style=gnu -Wl,--build-id=none -Wl,-O1,--sort-common,--as-needed,--gc-sections -flto -no-pie -s
+LDFLAGS     = -lc -lvorbis -lvorbisenc -logg -lgcc -lm -lstdc++ -latomic -lSDL -lasound -lfreetype -lavcodec -lavformat -lavutil -lswresample -lbz2 -lswscale -lopus -ljpeg -lpng -lz -pthread -Wl,-z,norelro -Wl,--hash-style=gnu -Wl,--build-id=none -Wl,-O1,--sort-common,--as-needed,--gc-sections -flto -no-pie -s
 ifeq ($(RENDERER_CONFIG), cairo)
 LDFLAGS		+= -lcairo
 else ifeq ($(RENDERER_CONFIG), opengl)

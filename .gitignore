@@ -88,7 +88,6 @@ macros/libtool.m4
 macros/lt*.m4
 po/*.gmo
 py-compile
-revno.h
 site.exp
 stamp-h1
 testoutlog.*
