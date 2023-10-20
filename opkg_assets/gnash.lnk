@@ -1,0 +1,5 @@
+title=Gnash
+description=Gnash - Flash SWF player
+exec=/mnt/emus/gnash/gnash
+selectordir=/mnt/roms/FLASH
+selectorfilter=.swf

@@ -1,0 +1,7 @@
+Package: gnash
+Version: 1.0.0
+Description: Gnash - Flash SWF player
+Section: emulators
+Priority: optional
+Maintainer: Apacz
+Architecture: arm

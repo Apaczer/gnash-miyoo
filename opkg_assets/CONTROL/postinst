@@ -1,0 +1,2 @@
+#!/bin/sh
+sync; echo 'Installation finished.'; echo 'Restarting gnash..'; sleep 1; killall gnash; exit 0

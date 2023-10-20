@@ -1,0 +1,2 @@
+#!/bin/sh
+sync; echo 'Installing new gnash..'; rm /var/lib/opkg/info/gnash.list; exit 0

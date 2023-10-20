@@ -1,4 +1,16 @@
-PRGNAME     = gnash
+
+HOMEPATH = /mnt
+TARGET ?= gnash
+VERSION ?= $(shell date +%Y-%m-%d\ %H:%M)
+RELEASEDIR = package
+ASSETSDIR = assets
+OPKG_ASSETSDIR = opkg_assets
+LINK = $(TARGET).lnk
+DESTDIR = emus
+SECTION = emulators
+ALIASES = aliases.txt
+
+PRGNAME     = $(TARGET)
 
 TOOLCHAINDIR	?= /opt/miyoo
 SYSROOT			= $(TOOLCHAINDIR)/usr/arm-buildroot-linux-musleabi/sysroot
@@ -63,7 +75,7 @@ CFLAGS		+= -DPIXELFORMAT_ARGB32
 endif
 
 ifeq ($(PROFILE), YES)
-CFLAGS 		+= -fprofile-generate=/media/roms/gnash_gcda
+CFLAGS 		+= -fprofile-generate=/mnt/profile/gnash_gcda
 else ifeq ($(PROFILE), APPLY)
 CFLAGS		+= -fprofile-use="./"
 endif
@@ -83,6 +95,8 @@ endif
 
 
 # Rules to make executable
+all: $(PRGNAME)
+
 $(PRGNAME): $(OBJS)  
 	$(CC) $(CFLAGS) -o $(PRGNAME) $^ $(LDFLAGS)
 
@@ -92,5 +106,44 @@ $(OBJ_C) : %.o : %.c
 $(OBJ_CP) : %.o : %.cpp
 	$(CXX) $(CXXFLAGS) -std=gnu++14 -c -o $@ $<
 
+package: all
+	@rm -rf $(RELEASEDIR)
+	@mkdir -p $(RELEASEDIR)
+	@cp *$(TARGET) $(RELEASEDIR)/
+	@mkdir -p $(RELEASEDIR)/$(DESTDIR)/$(TARGET)
+	@mkdir -p $(RELEASEDIR)/gmenu2x/sections/$(SECTION)
+	@mv $(RELEASEDIR)/*$(TARGET) $(RELEASEDIR)/$(DESTDIR)/$(TARGET)/
+	@cp -r $(ASSETSDIR)/* $(RELEASEDIR)/$(DESTDIR)/$(TARGET)
+	@cp $(OPKG_ASSETSDIR)/$(LINK) $(RELEASEDIR)/gmenu2x/sections/$(SECTION)
+	@sed "s/^exec=.*/exec=\$(HOMEPATH)\/$(DESTDIR)\/$(TARGET)\/$(TARGET)/" $(OPKG_ASSETSDIR)/$(LINK) > $(RELEASEDIR)/gmenu2x/sections/$(SECTION)/$(LINK)
+	@cp $(OPKG_ASSETSDIR)/$(ALIASES) $(RELEASEDIR)/$(DESTDIR)/$(TARGET)
+
+zip: package
+	@rm -rf $(RELEASEDIR)/*.ipk
+	@cd $(RELEASEDIR) && zip -rq $(TARGET)$(VERSION).zip ./* && mv *.zip ..
+	@rm -rf $(RELEASEDIR)/*
+	mv $(TARGET)*.zip $(RELEASEDIR)/
+
+ipk: package
+	@rm -rf $(RELEASEDIR)/*.zip
+	@mkdir -p .$(HOMEPATH)
+	@mv $(RELEASEDIR)/* .$(HOMEPATH) && mv .$(HOMEPATH) $(RELEASEDIR)
+	@mkdir -p $(RELEASEDIR)/data
+	@mv $(RELEASEDIR)$(HOMEPATH) $(RELEASEDIR)/data/
+	@echo "#!/bin/sh\nsync; echo 'Installing new $(TARGET)..'; rm /var/lib/opkg/info/$(TARGET).list; exit 0" > $(OPKG_ASSETSDIR)/CONTROL/preinst
+	@echo "#!/bin/sh\nsync; echo 'Installation finished.'; echo 'Restarting $(TARGET)..'; sleep 1; killall $(TARGET); exit 0" > $(OPKG_ASSETSDIR)/CONTROL/postinst
+	@chmod +x $(OPKG_ASSETSDIR)/CONTROL/postinst $(OPKG_ASSETSDIR)/CONTROL/preinst
+	@cp -r $(OPKG_ASSETSDIR)/CONTROL $(RELEASEDIR)
+	@sed "s/^Version:.*/Version: $(VERSION)/" $(OPKG_ASSETSDIR)/CONTROL/control > $(RELEASEDIR)/CONTROL/control
+	@echo 2.0 > $(RELEASEDIR)/debian-binary
+	@tar --owner=0 --group=0 -czvf $(RELEASEDIR)/data.tar.gz -C $(RELEASEDIR)/data/ . >/dev/null 2>&1
+	@tar --owner=0 --group=0 -czvf $(RELEASEDIR)/control.tar.gz -C $(RELEASEDIR)/CONTROL/ . >/dev/null 2>&1
+	@ar r $(TARGET).ipk $(RELEASEDIR)/control.tar.gz $(RELEASEDIR)/data.tar.gz $(RELEASEDIR)/debian-binary
+	@rm -rf $(RELEASEDIR)/*
+	mv $(TARGET).ipk $(RELEASEDIR)/
+
 clean:
 	rm -f $(PRGNAME) *.o
+	rm -rf $(RELEASEDIR)
+	rm -f *.ipk
+	rm -f *.zip

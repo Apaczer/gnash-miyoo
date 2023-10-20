@@ -169,3 +169,5 @@ utilities/rtmpget
 utilities/soldumper
 extensions/fileio/test
 extensions/fileio/test.swf
+gnash
+package/*
